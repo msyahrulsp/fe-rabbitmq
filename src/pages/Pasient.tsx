@@ -4,11 +4,12 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Select,
   VStack,
   useToast
 } from '@chakra-ui/react';
 import { Layout } from '../components/Layout';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { BaseSyntheticEvent } from 'react';
 import axios from 'axios';
 
@@ -24,7 +25,7 @@ interface FormValue {
 }
 
 export const PasientPage = () => {
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState, control, setValue } = useForm({
     defaultValues: {
       name: '',
       email: '',
@@ -159,6 +160,61 @@ export const PasientPage = () => {
             {formState.errors.datetime && (
               <FormErrorMessage>
                 {formState.errors.datetime.message as string}
+              </FormErrorMessage>
+            )}
+          </FormControl>
+          <FormControl isInvalid={!!formState.errors.bookingType}>
+            <FormLabel mb={1}>Type</FormLabel>
+            <Controller
+              control={control}
+              name="bookingType"
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Type must be filled'
+                }
+              }}
+              render={() => (
+                <Select
+                  variant="filled"
+                  w="full"
+                  onChange={(e) =>
+                    setValue('bookingType', e.target.value as unknown as string)
+                  }
+                  transition="all 0.2s ease-in-out"
+                  _hover={{
+                    opacity: 0.8
+                  }}
+                  _focus={{
+                    background: 'gray.100',
+                    color: 'black'
+                  }}
+                  cursor="pointer"
+                >
+                  <option
+                    style={{
+                      background: 'gray.100',
+                      color: 'black'
+                    }}
+                    value="vaccination"
+                  >
+                    Vaccination
+                  </option>
+                  <option
+                    style={{
+                      background: 'gray.100',
+                      color: 'black'
+                    }}
+                    value="general"
+                  >
+                    General
+                  </option>
+                </Select>
+              )}
+            />
+            {formState.errors.bookingType && (
+              <FormErrorMessage>
+                {formState.errors.bookingType.message}
               </FormErrorMessage>
             )}
           </FormControl>
