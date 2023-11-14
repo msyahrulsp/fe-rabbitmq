@@ -36,11 +36,22 @@ export const PasientPage = () => {
   });
   const toast = useToast();
 
-  const submitHandler: SubmitHandler<FormValue> = (data: FormValue, event) => {
+  const submitHandler: SubmitHandler<FormValue> = async (
+    data: FormValue,
+    event
+  ) => {
     event?.preventDefault();
 
     try {
-      const res = axios.post('docker-booking-client:3001/api/v1/book', data);
+      const res = await axios.post(
+        import.meta.env.VITE_BASE_REST_URL + '/api/v1/book',
+        data,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
       console.log(res);
 
       toast({
