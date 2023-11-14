@@ -1,13 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
-import { useToast } from '@chakra-ui/react';
+import { Box, useToast } from '@chakra-ui/react';
 
 export const VaccinationPage = () => {
+  const [curData, setCurData] = useState();
   const toast = useToast();
 
   useEffect(() => {
     // define a websocket client
-    const socket = new WebSocket('ws://localhost:8080/api/v1/bookings');
+    const socket = new WebSocket('ws://localhost:8080/api/v1/bookings/ws');
 
     // listen to socket events
     socket.onopen = () => {
@@ -15,7 +16,8 @@ export const VaccinationPage = () => {
     };
 
     socket.onmessage = (event) => {
-      console.log(event);
+      const cur = JSON.parse(event.data)['bookings'];
+      setCurData(cur[cur.length - 1]);
       toast({
         description: 'WIBU ROJAN',
         status: 'success',
@@ -39,9 +41,7 @@ export const VaccinationPage = () => {
 
   return (
     <Layout title="Vaccination Hospital" bg="/tohsaka.jpg">
-      {/* <VStack spacing={2} bg="#FFFFFF99" borderRadius="lg" py={4} px={5}>
-        
-      </VStack> */}
+      <Box bg="#FFFFFFCC" borderRadius="lg" py={4} px={5}></Box>
     </Layout>
   );
 };

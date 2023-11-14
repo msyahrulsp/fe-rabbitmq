@@ -5,7 +5,7 @@ import { Layout } from '../components/Layout';
 export const HomePage = () => {
   return (
     <Layout bg="/bg.jpg">
-      <VStack spacing={2} bg="#FFFFFF99" borderRadius="lg" py={4} px={5}>
+      <VStack spacing={2} bg="#FFFFFFCC" borderRadius="lg" py={4} px={5}>
         <Box fontSize="lg" color="black" fontWeight="bold">
           Pilih Role
         </Box>
