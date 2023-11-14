@@ -4,11 +4,13 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
-  VStack
+  VStack,
+  useToast
 } from '@chakra-ui/react';
 import { Layout } from '../components/Layout';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { BaseSyntheticEvent } from 'react';
+import axios from 'axios';
 
 type BookingType = 'vaccination' | string;
 
@@ -32,12 +34,32 @@ export const HomePage = () => {
       description: ''
     }
   });
+  const toast = useToast();
 
   const submitHandler: SubmitHandler<FormValue> = (data: FormValue, event) => {
     event?.preventDefault();
 
     try {
-    } catch (error) {}
+      const res = axios.post('docker-booking-client:3001/api/v1/book', data);
+      console.log(res);
+
+      toast({
+        description: 'WIBU ROJAN',
+        status: 'success',
+        duration: 3000,
+        position: 'top',
+        isClosable: true
+      });
+    } catch (error) {
+      toast({
+        description: 'Yah gagal :p',
+        status: 'error',
+        duration: 3000,
+        position: 'top',
+        isClosable: true
+      });
+      console.error(error);
+    }
   };
 
   return (
