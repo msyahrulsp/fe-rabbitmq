@@ -6,11 +6,35 @@ export const VaccinationPage = () => {
   const toast = useToast();
 
   useEffect(() => {
-    toast({
-      description: 'WIBU ROJAN',
-      status: 'success',
-      isClosable: true
-    });
+    // define a websocket client
+    const socket = new WebSocket('ws://localhost:8080/api/v1/bookings');
+
+    // listen to socket events
+    socket.onopen = () => {
+      console.log('Connected to socket');
+    };
+
+    socket.onmessage = (event) => {
+      console.log(event);
+      toast({
+        description: 'WIBU ROJAN',
+        status: 'success',
+        isClosable: true
+      });
+    };
+
+    socket.onclose = () => {
+      console.log('Disconnected from socket');
+    };
+
+    socket.onerror = (error) => {
+      console.error(error);
+    };
+
+    // close socket when component unmounts
+    return () => {
+      socket.close();
+    };
   }, []);
 
   return (
