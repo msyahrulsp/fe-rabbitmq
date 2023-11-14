@@ -13,29 +13,29 @@ export const routing: Route[] = [
         default: module.HomePage
       }))
     )
+  },
+  {
+    path: '/customer',
+    component: React.lazy(() =>
+      import('./pages/Pasient').then((module) => ({
+        default: module.PasientPage
+      }))
+    )
+  },
+  {
+    path: '/general',
+    component: React.lazy(() =>
+      import('./pages/General').then((module) => ({
+        default: module.GeneralPage
+      }))
+    )
+  },
+  {
+    path: '/vaccination',
+    component: React.lazy(() =>
+      import('./pages/Vaccination').then((module) => ({
+        default: module.VaccinationPage
+      }))
+    )
   }
-  // {
-  //   path: '/customer',
-  //   component: React.lazy(() =>
-  //     import('./pages/Customer').then((module) => ({
-  //       default: module.CustomerPage
-  //     }))
-  //   )
-  // },
-  // {
-  //   path: '/chef',
-  //   component: React.lazy(() =>
-  //     import('./pages/Chef').then((module) => ({
-  //       default: module.ChefPage
-  //     }))
-  //   )
-  // },
-  // {
-  //   path: '/receptionist',
-  //   component: React.lazy(() =>
-  //     import('./pages/Receptionist').then((module) => ({
-  //       default: module.ReceptionistPage
-  //     }))
-  //   )
-  // }
 ];
