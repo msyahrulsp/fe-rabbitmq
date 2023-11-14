@@ -1,0 +1,76 @@
+# Use root/example as user/password credentials
+version: "3.1"
+
+services:
+  doctor-booking-client:
+    build:
+      context: ./doctor-customer
+      dockerfile: Dockerfile
+    image: rozanfa/doctor-booking-client:latest
+    container_name: doctor-booking-client
+    ports:
+      - "3001:3001"
+    networks:
+      - doctor-booking-network
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    restart: unless-stopped
+    environment:
+      - PORT=3001
+      - MONGO_URL=mongodb://root:example@mongo:27017/
+      - RABBITMQ_URL=amqp://rabbitmq:rabbitmq@rabbitmq:5672/
+  rabbitmq:
+    ports:
+      - 5672:5672
+      - 15672:15672
+    image: rabbitmq:latest
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    networks:
+      - doctor-booking-network
+
+  reservation-general:
+    build:
+      context: ./reservation-general
+      dockerfile: Dockerfile
+    image: rozanfa/reservation-general
+    container_name: reservation-general
+    ports:
+      - "8081:8081"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:rabbitmq@rabbitmq:5672/
+    networks:
+      - doctor-booking-network
+    restart: always
+    
+  reservation-vaccination:
+    build:
+      context: ./reservation-vaccination
+      dockerfile: Dockerfile
+    image: rozanfa/reservation-vaccination
+    container_name: reservation-vaccination
+    ports:
+      - "8080:8080"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:rabbitmq@rabbitmq:5672/
+    networks:
+      - doctor-booking-network
+    restart: always
+
+  fe-booking-system:
+    build:
+      context: ./fe-booking-system
+      dockerfile: Dockerfile
+    image: rozanfa/fe-booking-system
+    container_name: fe-booking-system
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_BASE_REST_URL=http://localhost:3001
+
+networks:
+  doctor-booking-network:
+    driver: bridge
