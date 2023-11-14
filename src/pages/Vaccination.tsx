@@ -24,9 +24,11 @@ interface Props {
 export const VaccinationPage = () => {
   const [curData, setCurData] = useState<Props[]>([]);
   const toast = useToast();
+  let count = 0;
 
   useEffect(() => {
     // define a websocket client
+    console.log("Creating new socket")
     const socket = new WebSocket('ws://localhost:8080/api/v1/bookings/ws');
 
     // listen to socket events
@@ -35,13 +37,17 @@ export const VaccinationPage = () => {
     };
 
     socket.onmessage = (event) => {
+      console.log('Message from socket', event.data);
       const cur = JSON.parse(event.data)['bookings'];
       setCurData(cur);
-      toast({
-        description: 'WIBU ROJAN',
-        status: 'success',
-        isClosable: true
-      });
+      if (count != 0) {
+        toast({
+          description: 'Ada Reservasi Baru!',
+          status: 'success',
+          isClosable: true
+        });
+      }
+      count += 1
     };
 
     socket.onclose = () => {

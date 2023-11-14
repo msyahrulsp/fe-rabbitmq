@@ -10,8 +10,8 @@ interface Props {
 export const Layout = ({ title, children, bg }: Props) => {
   useEffect(() => {
     document.title = title
-      ? `${title} | Camunda FE Mockup`
-      : 'Camunda FE Mockup';
+      ? `${title} | RabbitMQ Demo`
+      : 'RabbitMQ Demo';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

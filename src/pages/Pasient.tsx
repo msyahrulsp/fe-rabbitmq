@@ -56,7 +56,7 @@ export const PasientPage = () => {
       console.log(res);
 
       toast({
-        description: 'WIBU ROJAN',
+        description: 'Berhasil ditambahkan!',
         status: 'success',
         duration: 3000,
         position: 'top',
