@@ -4,3 +4,5 @@ build
 .git
 *.md
 .gitignore
+.yarn
+yarn.lock

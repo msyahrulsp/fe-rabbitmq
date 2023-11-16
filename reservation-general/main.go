@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
 
 	"net/http"
@@ -93,32 +92,31 @@ type Response struct {
 	Bookings []Booking `json:"bookings"`
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+func getBooking() []byte {
+	message, err := json.Marshal(
+		Response{
+			Bookings: bookings,
+		},
+	)
+	failOnError(err, "Failed to marshal JSON")
+	return message
 }
 
-func wsListener(conn *websocket.Conn) {
+func broadcastBookingUpdate(room *Room) {
 	for {
-		log.Println("Waiting for notify")
+		log.Println("Waiting for update")
 		<-notifyMq
-		message, err := json.Marshal(
-			Response{
-				Bookings: bookings,
-			},
-		)
-		failOnError(err, "Failed to marshal JSON")
-
-		log.Printf("Sending message to ws: %s", message)
-		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			log.Println(err)
-			return
-		}
+		message := getBooking()
+		log.Printf("Broadcasting message to all ws: %s", message)
+		room.Broadcast <- message
 	}
 }
 
 func main() {
+	room := NewRoom()
+	go room.Start()
 	go handleRabbitMQ()
+	go broadcastBookingUpdate(room)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello World!"))
@@ -134,25 +132,10 @@ func main() {
 	})
 
 	http.HandleFunc("/api/v1/bookings/ws", func(w http.ResponseWriter, r *http.Request) {
-		upgrader.CheckOrigin = func(r *http.Request) bool { return true }
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Content-Type", "application/json")
-
-		ws, err := upgrader.Upgrade(w, r, nil)
-		failOnError(err, "Failed to upgrade connection")
-
-		defer ws.Close()
-
-		message, err := json.Marshal(
-			Response{
-				Bookings: bookings,
-			},
-		)
-		failOnError(err, "Failed to marshal JSON")
-
-		log.Printf("Sending message to ws: %s", message)
-		ws.WriteMessage(websocket.TextMessage, message)
-		wsListener(ws)
+		c := room.AddClient(w, r)
+		msg := getBooking()
+		log.Printf("Sending message to ws: %s", msg)
+		c.Send(msg)
 	})
 
 	err := http.ListenAndServe(":8081", nil)

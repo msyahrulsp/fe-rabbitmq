@@ -1,4 +1,4 @@
-FROM node:19 as builder
+FROM node:19-alpine as builder
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -8,9 +8,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN npm ci
 
-RUN npx tsc -p .
-
 # Exports
 EXPOSE 3001
 
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]

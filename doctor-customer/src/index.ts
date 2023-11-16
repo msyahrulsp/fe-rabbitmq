@@ -22,7 +22,7 @@ const router: Router = express.Router();
 const port = process.env.PORT;
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+  res.send('Express + TypeScript!');
 });
 
 router.get('/', (req: Request, res: Response) => {
@@ -61,7 +61,7 @@ router.post('/book', (req: Request, res: Response) => {
 
     // Publish to RabbitMQ
     amqp.connect(process.env.RABBITMQ_URL!).then((conn) => {
-      console.log('Connected to RabbitMQ')
+      console.log('Connected to RabbitMQ what')
       
       return conn.createChannel().then((ch) => {
         ch.assertQueue(queue, {
